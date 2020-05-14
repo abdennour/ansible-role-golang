@@ -1,0 +1,6 @@
+- name: "{{ golang_single_user }} is in go group"
+  user:
+    name: "{{ golang_single_user }}"
+    state: present
+    groups: "{{ golang_group }}"
+    append: yes

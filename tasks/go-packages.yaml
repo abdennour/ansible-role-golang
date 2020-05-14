@@ -1,0 +1,8 @@
+- name: git client exists
+  package:
+    name: git
+    state: present
+- name: Go packages are installed
+  command: go get {{ item }} creates={{ golang_gopath }}/src/{{ item }}
+  environment: golang_env
+  loop: "{{ golang_packages }}"

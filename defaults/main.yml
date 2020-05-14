@@ -2,3 +2,8 @@
 golang_version: 1.14
 golang_gopath: /opt/gopath
 golang_install_dir: /usr/local/share
+golang_tarball_repo: https://golang.org/dl
+golang_group: go
+golang_users: []
+golang_packages: []
+# - github.com/tools/godep

@@ -1,50 +1,64 @@
 ---
-- name: Prepare | Get the current users name
-  shell: id -u -n
-  register: user_name
-
-- name: Prepare | Get the current users group
-  shell: id -g -n
-  register: user_group
+- name:  user and group management is done
+  include_tasks: group-users.yaml
+- name: cache dir exists
+  file:
+    path: "{{ golang_cache_dir }}"
+    state: directory
 
 - name: Prepare | Register the current Go version (if any)
   command: "{{ golang_install_dir }}/go/bin/go version"
   ignore_errors: yes
   register: go_version
+  changed_when: false
+
+- name: delete existing go if it's different version
+  file:
+    path: "{{ golang_install_dir }}/go"
+    state: absent
+  when: (go_version.stdout is defined) and (go_version.stdout != golang_version_string )
 
 - name: Check that the golang tar exists
   stat:
-    path: "{{ ansible_cache_dir }}/{{golang_tarball}}"
+    path: "{{ golang_cache_dir }}/{{ golang_tarball }}"
   register: golang_tar
+  # failed_when: false
 
 - name: Install | Download the Go tarball
-  command: wget {{golang_download_location}} -P {{ansible_cache_dir}}
+  get_url:
+    url: "{{ golang_download_location }}"
+    dest: "{{ golang_cache_dir }}"
+  # command: wget {{ golang_download_location }} -P {{ golang_cache_dir }}
   when: golang_tar.stat.exists == False
-  sudo: yes
 
 - name: Install | Extract the Go tarball if Go is not yet installed or if it is not the desired version
-  shell: tar xzf {{ansible_cache_dir}}/{{golang_tarball}} -C {{golang_install_dir}} creates={{golang_install_dir}}/go
-  when: go_version|failed or go_version.stdout != golang_version_string
-  sudo: yes
+#  shell: tar xzf {{ golang_cache_dir }}/{{ golang_tarball }} -C {{ golang_install_dir }} creates={{ golang_install_dir }}/go
+  unarchive:
+    src: "{{ golang_cache_dir }}/{{ golang_tarball }}"
+    dest: "{{ golang_install_dir }}"
+    remote_src: yes
+    creates: "{{ golang_install_dir }}/go"
 
+# - name: Golang group exists
+#   group:
+#     name: "{{ golang_group }}"
 - name: Install | Ensure that GOPATH exists
-  file: path={{ golang_gopath }} state=directory
-  sudo: yes
-
-- name: Install | Ensure that GOPATH is owned by current user
-  shell: chown -R {{user_name.stdout}}:{{user_group.stdout}} {{golang_gopath}}
-  sudo: yes
+  file:
+    path: "{{ golang_gopath }}"
+    state: directory
+    group: "{{ golang_group }}"
+    mode: 0775
 
 - name: Configure | Set GOROOT for all users and add to PATH
-  copy: src=go-root.sh
-        dest=/etc/profile.d
-  sudo: yes
+  copy:
+    src: go-root.sh
+    dest: /etc/profile.d
 
 - name: Configure | Set GOPATH for all users and add to PATH
-  copy: src=go-path.sh
-        dest=/etc/profile.d
-  sudo: yes
+  copy:
+    src: go-path.sh
+    dest: /etc/profile.d
 
-- name: Install | Ensure godep is installed
-  command: go get github.com/tools/godep creates={{golang_gopath}}/bin/godep
-  environment: golang_env
+- include_tasks: go-packages.yaml
+  when: golang_packages | length > 0
+

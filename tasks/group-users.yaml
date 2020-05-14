@@ -1,0 +1,16 @@
+- name: group exists
+  group:
+    name: "{{ golang_group }}"
+    state: present
+- name: current user belongs to group
+  include_tasks: user.yaml
+  vars:
+    golang_single_user: "{{ ansible_ssh_user }}"
+  when: ansible_ssh_user is defined
+
+- name: given users belong to group
+  include_tasks: user.yaml
+  vars:
+    golang_single_user: "{{ item }}"
+  when: golang_users | length > 0
+  loop: "{{ golang_users }}"

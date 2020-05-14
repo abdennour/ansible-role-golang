@@ -19,12 +19,15 @@ Role Variables
 --------------
 
 
-| Variable                | Description                                        | Default / Choices                               |
-| ----------------------- | -----------------------------------------------    | ----------------------------------------------- |
-| `golang_version`        | Go version                                         | (string) `1.14`                                 |
-| `golang_gopath`         | Directory path Used to set GOPATH env var          | (string) `/opt/gopath`                          |
-| `golang_install_dir`    | Directory path of software installation            | (string) `/usr/local/share`                     |
-
+| Variable                | Description                                               | Default / Choices                               |
+| ----------------------- | ------------------------------------------------------    | ----------------------------------------------- |
+| `golang_version`        | Go version                                                | (string) `1.14`                                 |
+| `golang_gopath`         | Directory path Used to set GOPATH env var                 | (string) `/opt/gopath`                          |
+| `golang_install_dir`    | Directory path of software installation                   | (string) `/usr/local/share`                     |
+| `golang_tarball_repo`   | Remote Repository from where to download software         | (string) `https://golang.org/dl`                |
+| `golang_packages`       | List of Go packages to be installed (check example below) | (array) i.e ["github.com/gorilla/mux"]          |
+| `golang_users`          | List of users to be appended to Go group (example below)  | (array) i.e ["ec2-user"]                        |
+| `golang_group`          | System group which owns Golang files                      | (string) `go`                                    |
 
 
 Dependencies
@@ -36,14 +39,21 @@ Example Playbook
 
 This is how you can use it:
 
-    - hosts: all
-      tasks:
-      - name: Go lang is installed
-        import_role:
-          name: abdennour.golang
-        vars:
-          go_version: "1.14"
-          
+```yaml
+- hosts: all
+  tasks:
+  - import_role:
+      name: ansible-role-golang
+    vars:
+      golang_version: "1.14"
+      golang_packages:
+      - github.com/gorilla/mux
+      - go.mongodb.org/mongo-driver/mongo
+      golang_users:
+      - "{{ ansible_ssh_user }}"
+    become: yes
+  
+```
 
 License
 -------
