@@ -27,7 +27,7 @@
   get_url:
     url: "{{ golang_download_location }}"
     dest: "{{ golang_cache_dir }}"
-  when: golang_tar.stat.exists == False
+  when: not golang_tar.stat.exists
 
 - name: Extract the Go tarball
   unarchive:
