@@ -1,0 +1,18 @@
+---
+- name: Converge
+  hosts: all
+  become: yes
+  vars:
+    test_version: "1.14"
+
+  tasks:
+  - name: role is imported
+    import_role:
+      name: abdennour.golang
+    vars:
+      golang_version: "{{ test_version }}"
+  post_tasks:
+  - name: go is instaled
+    command: "go version"
+    regiser: go_version_result
+    failed_when: go_version_result is not search('go{{ test_version }}')

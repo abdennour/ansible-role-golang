@@ -1,0 +1,4 @@
+---
+golang_version: 1.14
+golang_gopath: /opt/gopath
+golang_install_dir: /usr/local/share
