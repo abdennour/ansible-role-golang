@@ -22,27 +22,21 @@
   stat:
     path: "{{ golang_cache_dir }}/{{ golang_tarball }}"
   register: golang_tar
-  # failed_when: false
 
 - name: Install | Download the Go tarball
   get_url:
     url: "{{ golang_download_location }}"
     dest: "{{ golang_cache_dir }}"
-  # command: wget {{ golang_download_location }} -P {{ golang_cache_dir }}
   when: golang_tar.stat.exists == False
 
-- name: Install | Extract the Go tarball if Go is not yet installed or if it is not the desired version
-#  shell: tar xzf {{ golang_cache_dir }}/{{ golang_tarball }} -C {{ golang_install_dir }} creates={{ golang_install_dir }}/go
+- name: Extract the Go tarball
   unarchive:
     src: "{{ golang_cache_dir }}/{{ golang_tarball }}"
     dest: "{{ golang_install_dir }}"
     remote_src: yes
     creates: "{{ golang_install_dir }}/go"
 
-# - name: Golang group exists
-#   group:
-#     name: "{{ golang_group }}"
-- name: Install | Ensure that GOPATH exists
+- name: Ensure that GOPATH exists
   file:
     path: "{{ golang_gopath }}"
     state: directory
@@ -61,4 +55,3 @@
 
 - include_tasks: go-packages.yaml
   when: golang_packages | length > 0
-
