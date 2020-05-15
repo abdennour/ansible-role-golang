@@ -43,7 +43,7 @@ This is how you can use it:
 - hosts: all
   tasks:
   - import_role:
-      name: ansible-role-golang
+      name: abdennour.golang
     vars:
       golang_version: "1.14"
       golang_packages:

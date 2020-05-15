@@ -1,7 +1,7 @@
 galaxy_info:
   author: abdennour
   role_name: golang
-  description: Setup Go
+  description: Setup Golang for Go programming. Can add also Go packages
   company: kubernetes.tn < http://kubernetes.tn >
 
   # If the issue tracker for your role is not on github, uncomment the
