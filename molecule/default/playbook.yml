@@ -13,7 +13,9 @@
       golang_version: "{{ test_version }}"
   post_tasks:
   - name: go is installed
-    command: "go version"
+    command: bash -ac 'go version' # because of ansible_connection=docker here
     register: go_version_result
     failed_when: go_version_result is not search('go{{ test_version }}')
     changed_when: false
+    environment:
+      BASH_ENV: /etc/profile  # because of ansible_connection=docker here
