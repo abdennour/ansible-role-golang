@@ -19,3 +19,4 @@
     changed_when: false
     environment:
       BASH_ENV: /etc/profile  # because of ansible_connection=docker here
+    # environment: "{{ golang_env }}"
