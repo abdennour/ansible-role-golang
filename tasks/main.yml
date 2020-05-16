@@ -54,7 +54,7 @@
     dest: /etc/profile.d
 
 - name: go env vars are populated
-  shell: source /etc/profile
+  command: source /etc/profile
   changed_when: false
 
 - name: go env is available as fact (golang_environment)
