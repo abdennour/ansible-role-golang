@@ -53,5 +53,14 @@
     src: go-path.sh
     dest: /etc/profile.d
 
+- name: go env vars are populated
+  shell: source /etc/profile
+  changed_when: false
+
+- name: go env is available as fact (golang_environment)
+  set_fact:
+    golang_fact_env: "{{ golang_env }}"
+    cacheable: yes
+
 - include_tasks: go-packages.yaml
   when: golang_packages | length > 0

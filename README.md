@@ -30,6 +30,24 @@ Role Variables
 | `golang_group`          | System group which owns Golang files                      | (string) `go`                                    |
 
 
+Role Facts
+----------
+
+This role publish the variable `golang_fact_env` that can be used with the play which import the role.
+
+`golang_fact_env` is a good workaround if your hosts does not recognize `go` command after installation.
+
+If so, you just need to attach this variable as environment for the specific task
+
+```yaml
+# You import role 
+# then,
+- name: use go command
+  command: go get github.com/go-redis/redis
+  environment: "{{ golang_fact_env }}"
+``` 
+
+
 Dependencies
 ------------
 N/A
